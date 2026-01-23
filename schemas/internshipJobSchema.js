@@ -26,6 +26,10 @@ const createInternshipJobEntrySchema = z.object({
         .max(200, { message: "Source must not be greater 200 characters" })
         .optional(),
 
+    salary_range: z
+        .string()
+        .max(50, { message: "Salary range must not be greater than 50 characters" }),
+
     job_url: z
         .string()
         .url()
