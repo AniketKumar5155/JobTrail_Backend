@@ -68,8 +68,8 @@ const updateInternshipJobEntryService = async (userId, entryId, data) => {
 
     await pool.query(
         `UPDATE applied_internship_jobs
-         SET ${fields.join(`,`)}
-         WHERE id = ? AND user_id =?`,
+        SET ${fields.join(`,`)}
+        WHERE id = ? AND user_id =?`,
         values
     )
 
@@ -95,7 +95,7 @@ const getAllInternshipJobEntriesService = async ({
     sortDirection = "DESC"
 }) => {
     const values = [userId];
-    const buildClause = [`user_id = ?`];
+    const buildClause = [`user_id = ?`]
 
     // Filters
     if (filters.category) {

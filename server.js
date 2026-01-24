@@ -45,6 +45,10 @@ app.post('/ping', (req, res) => {
 app.use('/otp', otpRouter);
 app.use('/auth', authRouter);
 app.use('/internshipJob', internshipJobRouter)
+app.get("/healthz", (req, res) => {
+  res.json({ status: "ok" });
+});
+
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

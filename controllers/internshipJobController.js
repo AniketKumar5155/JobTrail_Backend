@@ -79,8 +79,6 @@ const getAllInternshipJobEntriesController = asyncHandlerMiddleware(async (req, 
     const sortType = req.query.sortType;
     const sortDirection = req.query.sortDirection;
 
-    console.log(userId, limit, page, filters)
-
     const allInternshipJobEntries = await getAllInternshipJobEntriesService({
         userId,
         filters, 
