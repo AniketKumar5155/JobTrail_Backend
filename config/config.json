@@ -1,27 +1,27 @@
 {
   "development": {
-    "username": "root",
+    "username": "postgres",
     "password": "",
     "database": "database_development",
     "host": "127.0.0.1",
-    "dialect": "mysql",
+    "port": 5432,
+    "dialect": "postgres",
     "timezone": "+05:30"
   },
   "test": {
-    "username": "root",
+    "username": "postgres",
     "password": "",
     "database": "database_test",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "port": 5432,
+    "dialect": "postgres"
   },
   "production": {
     "username": "process.env.DB_USER",
     "password": "process.env.DB_PASS",
     "database": "process.env.DB_NAME",
     "host": "process.env.DB_HOST",
-    "dialect": "mysql",
-    "dialectOptions": {
-      "charset": "utf8mb4"
-    }
+    "port": "process.env.DB_PORT",
+    "dialect": "postgres"
   }
 }
