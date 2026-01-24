@@ -34,15 +34,16 @@ const signupService = async (userData) => {
 
         const hashedPassword = await hashData(password);
 
-        const [newUser] = await connection.query(
+        const newUserResult = await connection.query(
             `INSERT INTO users
              (name, username, email, phone, password_hash) 
-             VALUES (?, ?, ?, ?, ?)`,
+             VALUES ($1, $2, $3, $4, $5)
+             RETURNING id`,
             [name, username, email, phone, hashedPassword]
         );
 
         const payload = {
-            userId: newUser.insertId,
+            userId: newUserResult.rows[0].id,
             email,
             username,
         }
@@ -53,8 +54,8 @@ const signupService = async (userData) => {
         await connection.query(
             `INSERT INTO refresh_tokens
              (user_id, refresh_token, expires_at) 
-             VALUES (?, ?, ?)`,
-            [newUser.insertId, hashedRefreshToken, expiresAt]
+             VALUES ($1, $2, $3)`,
+            [newUserResult.rows[0].id, hashedRefreshToken, expiresAt]
         );
 
         await connection.commit();
@@ -63,7 +64,7 @@ const signupService = async (userData) => {
             success: true,
             message: `User registered successfully`,
             user: {
-                userId: newUser.insertId,
+                userId: newUserResult.rows[0].id,
                 name,
                 email,
                 username,
@@ -95,14 +96,14 @@ const loginService = async ({ identifier, password} ) => {
         if (!password) {
             throw new Error(`Password is required for login`);
         }
-        const [rows] = await connection.query(
+        const userResult = await connection.query(
             `SELECT id, name, email, username, phone, password_hash
-             FROM users WHERE email = ? OR username = ?
+             FROM users WHERE email = $1 OR username = $2
              LIMIT 1`,
             [identifier, identifier]
-        )
+        );
 
-        const user = rows[0];
+        const user = userResult.rows[0];
 
         if (!user) {
             throw new Error(`Invalid credentials`);
@@ -126,7 +127,7 @@ const loginService = async ({ identifier, password} ) => {
         await connection.query(
             `INSERT INTO refresh_tokens
              (user_id, refresh_token, expires_at)
-             VALUES (?, ?, ?)`,
+             VALUES ($1, $2, $3)`,
             [user.id, hashedRefreshToken, expiresAt]
         );
 
@@ -163,7 +164,7 @@ const logoutService = async (refreshToken) => {
         const hashedToken = await hashData(refreshToken);
 
         await connection.query(
-            "DELETE FROM refresh_tokens WHERE refresh_token = ?",
+            "DELETE FROM refresh_tokens WHERE refresh_token = $1",
             [hashedToken]
         );
 
