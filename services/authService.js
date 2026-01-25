@@ -14,9 +14,7 @@ const signupService = async (userData) => {
     const expiresAt = new Date(
         Date.now() + REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000
     );
-    const connection = await pool.getConnection();
     try {
-        await connection.beginTransaction();
         const {
             name,
             username,
@@ -34,7 +32,7 @@ const signupService = async (userData) => {
 
         const hashedPassword = await hashData(password);
 
-        const newUserResult = await connection.query(
+        const newUserResult = await pool.query(
             `INSERT INTO users
              (name, username, email, phone, password_hash) 
              VALUES ($1, $2, $3, $4, $5)
@@ -51,14 +49,12 @@ const signupService = async (userData) => {
 
         const hashedRefreshToken = await hashData(refreshToken);
 
-        await connection.query(
+        await pool.query(
             `INSERT INTO refresh_tokens
              (user_id, refresh_token, expires_at) 
              VALUES ($1, $2, $3)`,
             [newUserResult.rows[0].id, hashedRefreshToken, expiresAt]
         );
-
-        await connection.commit();
 
         return {
             success: true,
@@ -76,10 +72,7 @@ const signupService = async (userData) => {
             },
         }
     } catch (error) {
-        await connection.rollback();
         throw error;
-    } finally {
-        connection.release();
     }
 };
 
@@ -87,16 +80,14 @@ const loginService = async ({ identifier, password} ) => {
     const expiresAt = new Date(
         Date.now() + REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000
     );
-    const connection = await pool.getConnection();
     try {
-        await connection.beginTransaction();
         if (!identifier) {
             throw new Error(`Email or Username is required for login`);
         }
         if (!password) {
             throw new Error(`Password is required for login`);
         }
-        const userResult = await connection.query(
+        const userResult = await pool.query(
             `SELECT id, name, email, username, phone, password_hash
              FROM users WHERE email = $1 OR username = $2
              LIMIT 1`,
@@ -124,15 +115,13 @@ const loginService = async ({ identifier, password} ) => {
 
         const hashedRefreshToken = await hashData(refreshToken);
 
-        await connection.query(
+        await pool.query(
             `INSERT INTO refresh_tokens
              (user_id, refresh_token, expires_at)
              VALUES ($1, $2, $3)`,
             [user.id, hashedRefreshToken, expiresAt]
         );
-
-        await connection.commit();
-
+        
         return {
             success: true,
             message: `Login successful`,
@@ -149,36 +138,25 @@ const loginService = async ({ identifier, password} ) => {
             },
         };
     } catch (error) {
-        await connection.rollback();
         throw error;
-    } finally {
-        connection.release();
     }
 }
 
 const logoutService = async (refreshToken) => {
-    const connection = await pool.getConnection();
-
     try {
-        await connection.beginTransaction();
         const hashedToken = await hashData(refreshToken);
 
-        await connection.query(
+        await pool.query(
             "DELETE FROM refresh_tokens WHERE refresh_token = $1",
             [hashedToken]
         );
-
-        await connection.commit();
 
         return {
             success: true,
             message: "Logout successful",
         };
     } catch (error) {
-        await connection.rollback();
         throw error;
-    } finally {
-        connection.release();
     }
 };
 
