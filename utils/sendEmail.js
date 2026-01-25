@@ -1,16 +1,18 @@
 const { Resend } = require("resend");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const sendEmail = async ({ to, subject, text, html }) => {
     try {
-        if (!process.env.RESEND_API_KEY) {
+        const apiKey = process.env.RESEND_API_KEY;
+
+        if (!apiKey) {
             throw new Error("RESEND_API_KEY is missing");
         }
 
         if (!to) {
             throw new Error("Recipient email (to) is required");
         }
+
+        const resend = new Resend(apiKey);
 
         const response = await resend.emails.send({
             from: "JobTrail <onboarding@resend.dev>",
@@ -29,7 +31,7 @@ const sendEmail = async ({ to, subject, text, html }) => {
             statusCode: error.statusCode,
         });
 
-        throw new Error("Failed to send email");
+        throw error;
     }
 };
 
