@@ -1,37 +1,32 @@
-const { Resend } = require("resend");
+const nodemailer = require('nodemailer')
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+})
 
 const sendEmail = async ({ to, subject, text, html }) => {
-    try {
-        if (!process.env.RESEND_API_KEY) {
-            throw new Error("RESEND_API_KEY is missing");
-        }
+    try{
+    const mailOptions = ({
+        from: process.env.EMAIL_USER,
+        to,
+        subject,
+        text,
+        html,
+    });
 
-        if (!to) {
-            throw new Error("Recipient email (to) is required");
-        }
+    const email = await  transporter.sendMail(mailOptions);
+    return email;
+}catch(error){
+    console.log(`Failed to send email: ${error}`)
+    throw new Error(`Failed to send email`)
+}
+}
 
-        const response = await resend.emails.send({
-            from: "JobTrail <onboarding@resend.dev>",
-            to,
-            subject,
-            text,
-            html,
-        });
-
-        console.log("📧 Email sent via Resend:", response.id);
-        return response;
-
-    } catch (error) {
-        console.error("❌ Failed to send email via Resend:", {
-            message: error.message,
-            statusCode: error.statusCode,
-        });
-
-        throw new Error("Failed to send email");
-    }
-};
 
 module.exports = sendEmail;
-    
