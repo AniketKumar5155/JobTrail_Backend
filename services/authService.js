@@ -76,7 +76,7 @@ const signupService = async (userData) => {
     }
 };
 
-const loginService = async ({ identifier, password} ) => {
+const loginService = async ({ identifier, password }) => {
     const expiresAt = new Date(
         Date.now() + REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000
     );
@@ -121,7 +121,7 @@ const loginService = async ({ identifier, password} ) => {
              VALUES ($1, $2, $3)`,
             [user.id, hashedRefreshToken, expiresAt]
         );
-        
+
         return {
             success: true,
             message: `Login successful`,

@@ -1,34 +1,54 @@
-const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 15000,
+});
+
+transporter.verify((error, success) => {
+    if (error) {
+        console.error("❌ SMTP verification failed:", error.message);
+    } else {
+        console.log("✅ SMTP server is ready to send emails");
+    }
+});
 
 const sendEmail = async ({ to, subject, text, html }) => {
     try {
-        const apiKey = process.env.RESEND_API_KEY;
-
-        if (!apiKey) {
-            throw new Error("RESEND_API_KEY is missing");
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            throw new Error("EMAIL_USER or EMAIL_PASS is missing in environment variables");
         }
 
         if (!to) {
             throw new Error("Recipient email (to) is required");
         }
 
-        const resend = new Resend(apiKey);
-
-        const response = await resend.emails.send({
-            from: "JobTrail <onboarding@resend.dev>",
+        const mailOptions = {
+            from: `"JobTrail" <${process.env.EMAIL_USER}>`,
             to,
             subject,
             text,
             html,
-        });
+        };
 
-        console.log("📧 Email sent via Resend:", response.id);
-        return response;
+        const info = await transporter.sendMail(mailOptions);
+
+        console.log("Email sent successfully:", info.messageId);
+        return info;
 
     } catch (error) {
-        console.error("❌ Failed to send email via Resend:", {
+        console.error("Failed to send email:", {
             message: error.message,
-            statusCode: error.statusCode,
+            code: error.code,
+            response: error.response,
         });
 
         throw error;
