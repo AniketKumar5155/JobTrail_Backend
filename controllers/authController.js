@@ -29,7 +29,7 @@ const signupController = asyncHandlerMiddleware(async (req, res, next) => {
     res.cookie("refreshToken", token.refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "lax",
+        sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -53,8 +53,8 @@ const loginController = asyncHandlerMiddleware(async (req, res, next) => {
 
     res.cookie("refreshToken", token.refreshToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "strict",
+        secure: true,
+        sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
