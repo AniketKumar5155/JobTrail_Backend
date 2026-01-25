@@ -32,13 +32,26 @@ const createInternshipJobEntryService = async (userId, { data }) => {
     } = data;
 
     const newEntryResult = await pool.query(
-        `INSERT INTO applied_internship_jobs
-         (user_id, company_name, role, category, status, source, job_url, referral, location, salary_range, applied_date, notes)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-         RETURNING id`,
-        [userId, company_name, role, category, status, source, job_url, referral, location, salary_range, applied_date || null, notes]
-    );
-
+    `INSERT INTO applied_internship_jobs
+     (user_id, company_name, role, category, status, source, job_url, referral, location, salary_range, applied_date, notes)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+     RETURNING id`,
+    [
+        userId,
+        company_name || null,
+        role || null,
+        category || null,
+        status || null,
+        source || null,
+        job_url || null,
+        referral || null,
+        location || null,
+        salary_range || null,
+        applied_date || null,
+        notes || null,
+    ]
+);
+    
     const rowResult = await pool.query(
         `SELECT id, user_id, company_name, role, category, status, source, job_url, referral, location, salary_range, applied_date, notes
          FROM applied_internship_jobs WHERE id = $1`,
@@ -58,7 +71,7 @@ const updateInternshipJobEntryService = async (userId, entryId, data) => {
     for (const key of ALLOWED_UPDATE_FIELDS) {
         if (data[key] !== undefined) {
             fields.push(`${key} = $${paramIndex}`);
-            values.push(data[key]);
+            values.push(data[key] !== undefined ? data[key] : null);
             paramIndex++;
         }
     }
