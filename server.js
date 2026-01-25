@@ -17,7 +17,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const allowedOrigins = [
     'http://localhost:3000',
-    'http://localhost:5173'
+    'http://localhost:5173',
+    'https://jobtrail-frontend.vercel.app'
 ];
 // Adds security headers to reduce common web attacks (XSS, clickjacking, info leaks)
 app.use(helmet());
