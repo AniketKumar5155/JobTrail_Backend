@@ -250,7 +250,6 @@ const getAllInternshipJobEntriesService = async ({
 
     const result = await pool.query(sql, values);
 
-    // Count query (NO limit / offset)
     let countSQL = `
         SELECT COUNT(*) AS total
         FROM applied_internship_jobs
@@ -272,41 +271,59 @@ const getAllInternshipJobEntriesService = async ({
     };
 };
 
-const getApplicationAnalyticsService = async (userId) => {
-    const totalCountSql = 
-        `
-        SELECT 
-        COUNT(*) as total 
-        FROM applied_internship_jobs 
-        WHERE user_id = $1
-        `;
-        
-    const categoryWiseCountSql = 
-        `
-        SELECT 
-        COUNT(*) as category 
-        FROM applied_internship_jobs 
-        WHERE user_id = $1
-        GROUP BY category
-        `;
-    const statusWiseCountSql = 
-        `
-        SELECT 
-        COALESCE(null, 'unknown') as status.
-        COUNT(*) as statys
-        FROM applied_internship_jobs 
-        WHERE user_id = $1
-        GROUP BY status
-        `;
+// const getApplicationAnalyticsService = async (userId) => {
+    // const totalCountSql = 
+        // `
+        // SELECT 
+        // COUNT(*) as total 
+        // FROM applied_internship_jobs 
+        // WHERE user_id = $1
+        // `;
+        // 
+    // const categoryWiseCountSql = 
+        // `
+        // SELECT 
+        // COUNT(*) as category 
+        // FROM applied_internship_jobs 
+        // WHERE user_id = $1
+        // GROUP BY category
+        // `;
+    // const statusWiseCountSql = 
+        // `
+        // SELECT 
+        // COALESCE(null, 'unknown') as status.
+        // COUNT(*) as statys
+        // FROM applied_internship_jobs 
+        // WHERE user_id = $1
+        // GROUP BY status
+        // `;
+// 
+        // const totalCount = await pool.query(totalCountSql, [userId])
+        // const categoryWiseCountCount = await pool.query(categoryWiseCountSql, [userId])
+        // const statusWiseCount = await pool.query(statusWiseCountSql, [userId])
+// }
 
-        const totalCount = await pool.query(totalCountSql, [userId])
-        const categoryWiseCountCount = await pool.query(categoryWiseCountSql, [userId])
-        const statusWiseCount = await pool.query(statusWiseCountSql, [userId])
+const getApplicationById = async (id, userId) => {
+    const application = await pool.query(`
+        SELECT
+        company_name,
+        role,
+        category,
+        status,
+        source,
+        job_url,
+        referral,
+        location,
+        salary_range,
+        applied_date,
+        notes,
+        rejection_reason,
+        FROM applied_
+        `)
 }
-
 module.exports = {
     createInternshipJobEntryService,
     updateInternshipJobEntryService,
     getAllInternshipJobEntriesService,
-    getApplicationAnalyticsService
+    // getApplicationAnalyticsService
 };

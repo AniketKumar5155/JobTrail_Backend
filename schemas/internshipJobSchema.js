@@ -43,7 +43,7 @@ const createInternshipJobEntrySchema = z.object({
     applied_date: z
         .coerce
         .date(),
-        
+
     location: z
         .string()
         .optional(),
