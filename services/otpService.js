@@ -13,7 +13,7 @@ const {
 } = require('../utils/redisCache');
 
 const sendOTPService = async (email) => {
-    const checkExistingUserResult = await checkUserExist(email);
+    const checkExistingUserResult = await checkUserExist(email, email);
     if (checkExistingUserResult) {
         throw new Error('Account already exist. Please login');
     }

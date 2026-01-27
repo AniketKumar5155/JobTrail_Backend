@@ -5,6 +5,7 @@ const validateZodMiddleware = (schema) => (req, res, next) => {
       field: err.path[0] || "unknown",
       message: err.message,
     }));
+    console.log(formattedErrors)
     return res.status(400).json({
       success: false,
       message: "Validation failed",

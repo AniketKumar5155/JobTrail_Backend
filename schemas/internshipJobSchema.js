@@ -25,7 +25,7 @@ const createInternshipJobEntrySchema = z.object({
         .string()
         .max(200, { message: "Source must not be greater 200 characters" })
         .optional(),
-    
+
     referral: z
         .string()
         .max(200, { message: "Referral must not be greater than 200 characters" }),
@@ -36,12 +36,17 @@ const createInternshipJobEntrySchema = z.object({
 
     job_url: z
         .string()
-        .url()
-        .optional(),
+        .url({ message: "Invalid URL" })
+        .optional()
+        .or(z.literal("")),
 
     applied_date: z
         .coerce
         .date(),
+        
+    location: z
+        .string()
+        .optional(),
 
     notes: z
         .string()
@@ -72,7 +77,7 @@ const updateInternshipJobEntrySchema = z.object({
             message: "Status is required"
         })
         .optional(),
-        
+
     source: z
         .string()
         .max(200, { message: "Source must not be greater 200 characters" })

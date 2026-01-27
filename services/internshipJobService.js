@@ -16,9 +16,6 @@ const ALLOWED_UPDATE_FIELDS = [
     "is_active",
 ];
 
-/* ===========================
-   CREATE ENTRY
-=========================== */
 const createInternshipJobEntryService = async (userId, { data }) => {
     const {
         company_name,
@@ -86,7 +83,10 @@ const createInternshipJobEntryService = async (userId, { data }) => {
             location,
             salary_range,
             applied_date,
-            notes
+            notes,
+            rejection_reason,
+            created_at,
+            updated_at
         FROM applied_internship_jobs
         WHERE id = $1
         `,
@@ -96,9 +96,6 @@ const createInternshipJobEntryService = async (userId, { data }) => {
     return rows[0];
 };
 
-/* ===========================
-   UPDATE ENTRY
-=========================== */
 const updateInternshipJobEntryService = async (userId, entryId, data) => {
     const fields = [];
     const values = [];
@@ -154,9 +151,6 @@ const updateInternshipJobEntryService = async (userId, entryId, data) => {
     return rows[0];
 };
 
-/* ===========================
-   GET ALL (FILTER + SEARCH + PAGINATION)
-=========================== */
 const getAllInternshipJobEntriesService = async ({
     userId,
     filters = {},
@@ -278,8 +272,41 @@ const getAllInternshipJobEntriesService = async ({
     };
 };
 
+const getApplicationAnalyticsService = async (userId) => {
+    const totalCountSql = 
+        `
+        SELECT 
+        COUNT(*) as total 
+        FROM applied_internship_jobs 
+        WHERE user_id = $1
+        `;
+        
+    const categoryWiseCountSql = 
+        `
+        SELECT 
+        COUNT(*) as category 
+        FROM applied_internship_jobs 
+        WHERE user_id = $1
+        GROUP BY category
+        `;
+    const statusWiseCountSql = 
+        `
+        SELECT 
+        COALESCE(null, 'unknown') as status.
+        COUNT(*) as statys
+        FROM applied_internship_jobs 
+        WHERE user_id = $1
+        GROUP BY status
+        `;
+
+        const totalCount = await pool.query(totalCountSql, [userId])
+        const categoryWiseCountCount = await pool.query(categoryWiseCountSql, [userId])
+        const statusWiseCount = await pool.query(statusWiseCountSql, [userId])
+}
+
 module.exports = {
     createInternshipJobEntryService,
     updateInternshipJobEntryService,
     getAllInternshipJobEntriesService,
+    getApplicationAnalyticsService
 };
