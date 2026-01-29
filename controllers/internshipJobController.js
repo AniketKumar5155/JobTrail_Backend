@@ -3,6 +3,7 @@ const {
     createInternshipJobEntryService,
     updateInternshipJobEntryService,
     getAllInternshipJobEntriesService,
+    getApplicationByIdService,
 } = require("../services/internshipJobService");
 const validateId = require("../utils/validateId");
 
@@ -92,11 +93,24 @@ const getAllInternshipJobEntriesController = asyncHandlerMiddleware(async (req, 
         success: true,
         message: `All InternshipJobEntries fetched successfully`,
         data: allInternshipJobEntries,
-    })
-})
+    });
+});
+
+const getApplicationByIdController = asyncHandlerMiddleware(async (req, res) => {
+    const id = req.params.id;
+    validateId(id);
+    const application = await getApplicationByIdService(id)
+
+    return res.status(200).json({
+        success: true,
+        message: "Application fetched successfully",
+        data: application,
+    });
+});
 
 module.exports = {
     createInternshipJobEntryController,
     updateInternshipJobEntryController,
     getAllInternshipJobEntriesController,
+    getApplicationByIdController,
 }

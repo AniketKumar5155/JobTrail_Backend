@@ -2,7 +2,8 @@ const express = require("express");
 const {
     createInternshipJobEntryController,
     updateInternshipJobEntryController,
-    getAllInternshipJobEntriesController
+    getAllInternshipJobEntriesController,
+    getApplicationByIdController
 } = require("../controllers/internshipJobController");
 const validateZodMiddleware = require("../middlewares/validateZodMiddleware");
 const { createInternshipJobEntrySchema, updateInternshipJobEntrySchema } = require("../schemas/internshipJobSchema");
@@ -28,6 +29,12 @@ internshipJobRouter.get(
     `/get-all-entries`,
     authMiddleware,
     getAllInternshipJobEntriesController,
+)
+
+internshipJobRouter.get(
+    '/get-application/:id',
+    authMiddleware,
+    getApplicationByIdController,
 )
 
 module.exports = internshipJobRouter;

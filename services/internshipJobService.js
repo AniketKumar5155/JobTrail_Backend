@@ -141,7 +141,9 @@ const updateInternshipJobEntryService = async (userId, entryId, data) => {
             applied_date,
             notes,
             rejection_reason,
-            is_active
+            is_active,
+            created_at,
+            updated_at
         FROM applied_internship_jobs
         WHERE id = $1 AND user_id = $2
         `,
@@ -303,9 +305,11 @@ const getAllInternshipJobEntriesService = async ({
         // const statusWiseCount = await pool.query(statusWiseCountSql, [userId])
 // }
 
-const getApplicationById = async (id, userId) => {
-    const application = await pool.query(`
+const getApplicationByIdService = async (id) => {
+    const { rows } = await pool.query(`
         SELECT
+        id,
+        user_id,
         company_name,
         role,
         category,
@@ -317,13 +321,27 @@ const getApplicationById = async (id, userId) => {
         salary_range,
         applied_date,
         notes,
+        is_active,
         rejection_reason,
-        FROM applied_
-        `)
+        created_at,
+        updated_at
+        FROM applied_internship_jobs
+        WHERE id = $1
+        `,
+        [id]
+    );
+
+    if(rows.length === 0){
+        throw new Error("Application does not exist")
+    }
+
+    return rows[0];
+
 }
 module.exports = {
     createInternshipJobEntryService,
     updateInternshipJobEntryService,
     getAllInternshipJobEntriesService,
     // getApplicationAnalyticsService
+    getApplicationByIdService,
 };
