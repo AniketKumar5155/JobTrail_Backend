@@ -6,7 +6,7 @@ const {
 } = require('../services/authService');
 
 // req.body is already validated by validateZodMiddleware
-const signupController = asyncHandlerMiddleware(async (req, res, next) => {
+const signupController = asyncHandlerMiddleware(async (req, res) => {
     const {
         name,
         username,
@@ -43,7 +43,7 @@ const signupController = asyncHandlerMiddleware(async (req, res, next) => {
     });
 });
 
-const loginController = asyncHandlerMiddleware(async (req, res, next) => {
+const loginController = asyncHandlerMiddleware(async (req, res) => {
     // const {
         // identifier,
         // password,
@@ -68,7 +68,7 @@ const loginController = asyncHandlerMiddleware(async (req, res, next) => {
     });
 });
 
-const logoutController = asyncHandlerMiddleware(async (req, res, next) => {
+const logoutController = asyncHandlerMiddleware(async (req, res) => {
     const refreshToken = req.cookies?.refreshToken;
 
     if (!refreshToken) {

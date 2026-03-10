@@ -7,7 +7,6 @@ const {
     verifyOTPService
 } = require(`./otpService`);
 
-
 const REFRESH_TOKEN_TTL_DAYS = Number(process.env.REFRESH_TOKEN_TTL_DAYS);
 
 const signupService = async (userData) => {

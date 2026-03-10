@@ -1,5 +1,4 @@
 const JWT = require('jsonwebtoken');
-const { ca } = require('zod/locales');
 
 const generateTokens = (payload) => {
     try{
